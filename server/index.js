@@ -12,6 +12,7 @@ const db = mysql.createConnection({
     user: 'your_username',
     password: 'your_password',
     database: 'your_database',
+
 });
 
 // Middleware for parsing JSON requests
