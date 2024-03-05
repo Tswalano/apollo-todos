@@ -1,15 +1,37 @@
-import { Button } from '@nextui-org/react'
-import { useState } from 'react'
-import Welcome from './components/Welcome'
-import MainLayout from './layout/MainLayout'
+import { Suspense, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import MainLayout from "./layout/MainLayout";
 
+//allow use of RN webview postMessage else it will be null
+declare const window: any;
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      //send only on mobile screens
+      if (screenWidth <= 576) {
+        //prevent crash
+        window.ReactNativeWebView?.postMessage(
+          JSON.stringify({
+            message: { width: screenWidth, height: screenHeight },
+          })
+        );
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    //clean up
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
     <MainLayout title="Home">
-      <h1>Welcome to Your App!</h1>
-      {/* Add your content here */}
+      <Suspense fallback={<>Loading....</>}>
+        <Outlet />
+      </Suspense>
     </MainLayout>
   )
 }
