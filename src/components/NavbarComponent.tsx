@@ -34,7 +34,7 @@ export default function NavbarComponent({ }: Props) {
                                     </span>
                                 </li>
                                 <li>
-                                    <Link onClick={logUserOut} to={routes.AUTH_PAGE} className="py-2 px-3 hover:bg-blue-800 hover:text-white text-gray-900 rounded">
+                                    <Link onClick={logUserOut} to={routes.LOGIN_PAGE} className="py-2 px-3 hover:bg-blue-800 hover:text-white text-gray-900 rounded">
                                         Logout
                                     </Link>
                                 </li>

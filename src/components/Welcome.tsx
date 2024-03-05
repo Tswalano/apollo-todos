@@ -1,10 +1,11 @@
 import { HiAcademicCap } from "react-icons/hi2";
 import * as Yup from 'yup';
-import { TodosModel, createApolloTasks, getApolloTasks } from "../utils";
+import { TodosModel, createApolloTasks, deleteApolloTasks, getApolloTasks, updateApolloTasks } from "../utils";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import Logo from "./Logo";
 import { FormikHelpers, useFormik } from "formik";
+import { HiCheck, HiOutlineTrash } from "react-icons/hi";
 
 const initialValues: TodosModel = {
     title: '',
@@ -86,6 +87,73 @@ export default function Welcome() {
     });
 
 
+    const handleCompleTodo = async (id: number | undefined) => {
+        console.log("handleComplete", id);
+
+        if (id && token) {
+            updateApolloTasks(id, token).then((result) => {
+                const { error, status, data } = result;
+
+                if (error) {
+                    setErrorMessage("Error occured, please try again later");
+
+                    if (status === "INVALID_TOKEN") {
+                        console.log("Sign out");
+                        logout()
+                    }
+
+                    return;
+                }
+
+                if (status === 200 && data.code === 'SUCCESS') {
+                    console.log('Successs', data);
+                    setTodos(todos.map((todo) => {
+                        if (todo.id === id) {
+                            return { ...todo, status: !todo.status }
+                        }
+                        return todo;
+                    }));
+                }
+
+                console.log("results", result);
+
+            }).catch((err) => {
+                console.error("error", err);
+            });
+        }
+    }
+
+    const handleDeleteTodo = async (id: number | undefined) => {
+        console.log("handleDelete", id);
+
+        if (id && token) {
+            deleteApolloTasks(id, token).then((result) => {
+                const { error, status, data } = result;
+
+                if (error) {
+                    setErrorMessage("Error occured, please try again later");
+
+                    if (status === "INVALID_TOKEN") {
+                        console.log("Sign out");
+                        logout()
+                    }
+
+                    return;
+                }
+
+                if (status === 200 && data.code === 'SUCCESS') {
+                    console.log('Successs', data);
+                    setTodos(todos.filter((todo) => todo.id !== id));
+                }
+
+                console.log("results", result);
+
+            }).catch((err) => {
+                console.error("error", err);
+            });
+        }
+    }
+
     return (
         <div className="">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -154,24 +222,33 @@ export default function Welcome() {
                 <ul role="list" className="divide-y divide-gray-100">
                     {todos.map((todo) => (
                         <li key={todo.id}
-                            className="flex w-full justify-between items-center p-4 m-2 bg-indigo-200 rounded-md">
+                            className={`flex w-full justify-between items-center p-4 m-2 ${todo.status ? 'bg-green-300' : 'bg-red-300'} rounded-md`}>
                             <div className="flex min-w-0">
                                 <div className="min-w-0 flex-auto">
                                     <p className="text-sm font-semibold leading-6 text-gray-900">
                                         {todo.title}
                                     </p>
-                                    <p className="truncate text-xs leading-5 text-gray-500">{todo.description}
+                                    <p className="truncate text-xs leading-5 text-gray-100">{todo.description}
                                     </p>
                                 </div>
                             </div>
                             <div className="hidden shrink-0 sm:flex sm:flex-col  sm:items-end">
                                 <div className="mt-1 flex items-center gap-x-1.5">
-                                    <div className="flex-none rounded-full bg-emerald-500/20 p-1">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                    </div>
-                                    <p className="text-xs leading-5 text-gray-500">
-                                        Done
-                                    </p>
+                                    {todo.status ? (
+                                        <button
+                                            onClick={() => handleDeleteTodo(todo.id)}
+                                            className={`flex justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-500`}
+                                        >
+                                            <HiOutlineTrash />
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleCompleTodo(todo.id)}
+                                            className={`flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-red-500`}
+                                        >
+                                            <HiCheck className="text-white" />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </li>

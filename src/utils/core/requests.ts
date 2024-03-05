@@ -169,3 +169,84 @@ export const createApolloTasks = async (todo: TodosModel, token: string) => {
         }
     }
 }
+
+export const updateApolloTasks = async (todoId: number, token: string) => {
+    try {
+        const url = `${API_URL}/update-todo`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+            body: JSON.stringify({ todoId })
+        });
+
+        const results = await response.json()
+
+        console.log(results);
+
+        if (results.error) {
+            return {
+                error: results.error,
+                status: response.status,
+            }
+        }
+
+        return {
+            error: false,
+            data: results,
+            status: response.status,
+        }
+
+
+    } catch (error) {
+        console.error(error);
+
+        return {
+            error: true,
+            status: 'UNKNOWN',
+        }
+    }
+}
+export const deleteApolloTasks = async (todoId: number, token: string) => {
+    try {
+        const url = `${API_URL}/delete-todo`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+            body: JSON.stringify({ todoId })
+        });
+
+        const results = await response.json()
+
+        console.log(results);
+
+        if (results.error) {
+            return {
+                error: results.error,
+                status: response.status,
+            }
+        }
+
+        return {
+            error: false,
+            data: results,
+            status: response.status,
+        }
+
+
+    } catch (error) {
+        console.error(error);
+
+        return {
+            error: true,
+            status: 'UNKNOWN',
+        }
+    }
+}
