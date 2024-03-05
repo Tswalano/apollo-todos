@@ -7,6 +7,7 @@ import Logo from "./Logo";
 import { FormikHelpers, useFormik } from "formik";
 import { HiCheck, HiOutlineTrash } from "react-icons/hi";
 
+// initial values for form
 const initialValues: TodosModel = {
     title: '',
     description: '',
@@ -19,6 +20,7 @@ export default function Welcome() {
     const [todos, setTodos] = useState<TodosModel[]>([])
     const { token } = useAuth()
 
+    // Fetch todos on mount
     useEffect(() => {
         if (token) {
             getApolloTasks(token).then((result) => {
