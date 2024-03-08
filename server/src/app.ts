@@ -179,7 +179,7 @@ app.post('/update-todo', verifyToken, async (req: Request, res: Response) => {
     }
 });
 
-// Delete todo route
+// Delete todo route 
 app.post('/delete-todo', verifyToken, async (req: Request, res: Response) => {
     const userId = (req.user as any)?.userId;
     const { todoId } = req.body;
